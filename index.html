@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>For Kelsi 💖</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+* { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', sans-serif; }
+body { overflow:hidden; background:#ffb3d9; color:#5a003a; text-align:center; }
+
+/* PASSWORD SCREEN */
+.screen { width:100vw; height:100vh; position:absolute; display:flex; justify-content:center; align-items:center; }
+.hidden { display:none; }
+.glass-card { background: rgba(255,255,255,0.25); padding:40px; border-radius:20px; backdrop-filter:blur(8px); box-shadow:0 8px 30px rgba(0,0,0,0.2); text-align:center; }
+.glass-card input { padding:10px; margin:20px 0; border-radius:10px; border:1px solid #ff85b3; width:200px; }
+.glass-card button { padding:10px 25px; background:#ffb3d9; border:none; border-radius:20px; color:white; cursor:pointer; transition:0.3s; box-shadow:0 4px 8px rgba(0,0,0,0.3); }
+.glass-card button:hover { background:#ff99c2; }
+
+/* ENVELOPE */
+.envelope-container { perspective:1000px; cursor:pointer; margin-bottom:10px; }
+.envelope { width:200px; height:120px; background:#ff2759; border-radius:10px; display:flex; justify-content:center; align-items:center; font-size:50px; box-shadow:0 8px 15px rgba(0,0,0,0.3); transform-style: preserve-3d; transition: transform 1s; }
+.envelope.open { transform: rotateY(180deg); }
+
+/* MAIN CONTENT */
+.container { padding:60px 20px; max-width:900px; margin:auto; }
+h1 { font-size:3rem; margin-bottom:10px; }
+h2 { font-weight:300; margin-bottom:40px; }
+.card { background: rgba(255, 255, 255, 0.25); color:#5a003a; border-radius:20px; padding:30px; margin:20px 0; box-shadow:0 8px 20px rgba(0,0,0,0.2); }
+button { background:#ffb3d9; border:none; padding:15px 30px; font-size:1.1rem; color:white; border-radius:30px; cursor:pointer; transition:0.3s; margin:10px 5px; box-shadow:0 4px 8px rgba(0,0,0,0.3); }
+button:hover { background:#ff99c2; transform:scale(1.05); }
+
+/* HEARTS */
+#heartContainer { position:absolute; inset:0; }
+.heart {
+  position:absolute;
+  width:50px;
+  height:50px;
+  background:#ff0000;
+  transform: rotate(-45deg);
+  animation: float 6s infinite ease-in-out;
+  opacity:0.7;
+}
+.heart::before, .heart::after {
+  content:"";
+  width:50px;
+  height:50px;
+  background:#ff0000;
+  border-radius:50%;
+  position:absolute;
+}
+.heart::before { top:-25px; left:0; }
+.heart::after { left:25px; top:0; }
+
+@keyframes float {
+  0%,100% { transform: translateY(0) rotate(-45deg); }
+  50% { transform: translateY(-20px) rotate(-45deg); }
+}
+
+/* MUSIC */
+.music-player { position: fixed; top:20px; right:20px; z-index:999; }
+.playlist {
+  background: rgba(255,255,255,0.8);
+  padding:10px;
+  border-radius:10px;
+  margin-top:5px;
+  display:none;
+  box-shadow:0 4px 10px rgba(0,0,0,0.3);
+}
+.playlist p { cursor:pointer; padding:5px; margin:0; }
+.playlist p:hover { background:#ff99c2; border-radius:5px; }
+
+/* VIDEO */
+#videoModal {
+  position:fixed;
+  inset:0;
+  background:rgba(255,192,203,0.95);
+  display:none;
+  justify-content:center;
+  align-items:center;
+  z-index:1000;
+}
+video { width:100%; border-radius:20px; }
+</style>
+</head>
+
+<body>
+
+<div id="passwordScreen" class="screen">
+  <div class="glass-card">
+    <h1>Only For Kelsi 💖</h1>
+    <input type="password" id="passwordInput" placeholder="Enter the key..." />
+    <button id="unlockBtn">Unlock</button>
+    <p id="errorText"></p>
+  </div>
+</div>
+
+<div id="mainExperience" class="hidden">
+
+  <div class="music-player">
+    <button id="toggleMusicBtn">🎵 Music</button>
+    <div class="playlist" id="playlist">
+      <p data-src="assets/harleys in hawai.mp3">Harleys in Hawaii</p>
+      <p data-src="assets/me gustas tu.mp3">Me Gustas Tu</p>
+      <p data-src="assets/wanna be yours.mp3">Wanna Be Yours</p>
+      <p data-src="assets/love.mp3">Love</p>
+    </div>
+    <audio id="bg-music" loop></audio>
+  </div>
+
+  <section id="giftSection" class="screen">
+    <div class="envelope-container" id="envelopeContainer">
+      <div class="envelope" id="envelope">💌</div>
+    </div>
+    <p>Tap the Envelope 🎁</p>
+  </section>
+
+  <section id="heartSection" class="screen hidden">
+    <div id="heartContainer"></div>
+    <div class="container">
+      <h1>Happy Valentine’s Day 💖</h1>
+      <h2>To my cutie Kelsi</h2>
+
+      <div class="card">
+        <p>It’s been a year huh? We fight a lot but we fix it always. I love you soooo much.</p>
+      </div>
+
+      <div class="card">
+        <h3>Why I Love You?</h3>
+        <p>• You accept me as I am</p>
+        <p>• You always make efforts for me</p>
+        <p>• You look cute and adorable</p>
+        <p>• You are loyal and only mine</p>
+        <p>And I just love you ❤️</p>
+      </div>
+
+      <button id="gameBtn">Play Strawberry Catch 🍓</button>
+    </div>
+  </section>
+
+  <div id="videoModal">
+    <video id="loveVideo" controls>
+      <source src="assets/video.mp4" type="video/mp4">
+    </video>
+    <button id="closeVideo">Close</button>
+  </div>
+
+</div>
+
+<script>
+const password = "priyanshuloveskelsi";
+
+unlockBtn.onclick = () => {
+  if (passwordInput.value === password) {
+    passwordScreen.classList.add("hidden");
+    mainExperience.classList.remove("hidden");
+  } else {
+    errorText.textContent = "That’s not the key to my heart 💔";
+  }
+};
+
+const music = document.getElementById("bg-music");
+const playlist = document.getElementById("playlist");
+
+toggleMusicBtn.onclick = () => {
+  playlist.style.display = playlist.style.display === "block" ? "none" : "block";
+};
+
+function playMusic(src) {
+  if (music.src !== src) {
+    music.src = src;
+    music.load();
+  }
+  music.play().catch(() => {});
+}
+
+playlist.querySelectorAll("p").forEach(song => {
+  song.onclick = () => playMusic(song.dataset.src);
+});
+
+envelope.onclick = () => {
+  envelope.classList.add("open");
+  playMusic("assets/harleys in hawai.mp3");
+
+  setTimeout(() => {
+    giftSection.classList.add("hidden");
+    heartSection.classList.remove("hidden");
+    createHearts();
+  }, 1000);
+};
+
+function createHearts() {
+  for (let i = 0; i < 14; i++) {
+    const heart = document.createElement("div");
+    heart.className = "heart";
+    heart.style.top = Math.random() * 80 + "%";
+    heart.style.left = Math.random() * 90 + "%";
+    heartContainer.appendChild(heart);
+  }
+}
+
+closeVideo.onclick = () => {
+  videoModal.style.display = "none";
+  loveVideo.pause();
+};
+
+gameBtn.onclick = () => window.open("strawberry_game.html", "_blank");
+</script>
+
+</body>
+</html>

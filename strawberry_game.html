@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Strawberry Catch 🍓</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', sans-serif; }
+  body { background:#ffb3d9; overflow:hidden; }
+  canvas { display:block; margin:0 auto; touch-action: none; }
+  #score { position:absolute; top:20px; left:50%; transform:translateX(-50%); font-size:2rem; color:#5a003a; font-weight:bold; z-index:10; }
+  #instructions { position:absolute; top:60px; left:50%; transform:translateX(-50%); color:#ffffff; font-size:1.2rem; text-align:center; max-width:90%; z-index:10; }
+</style>
+</head>
+<body>
+
+<div id="score">Score: 0</div>
+<div id="instructions">Move your bucket (mouse or touch) to catch strawberries! 🍓</div>
+<canvas id="gameCanvas"></canvas>
+
+<script>
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+
+// Fullscreen responsive canvas
+function resizeCanvas(){
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+window.addEventListener("resize", resizeCanvas);
+resizeCanvas();
+
+// Load images
+const strawberryImg = new Image();
+strawberryImg.src = "assets/strawberry.png"; // your strawberry image
+
+const bucketImg = new Image();
+bucketImg.src = "assets/bucket.png"; // your bucket image
+
+const bgImg = new Image();
+bgImg.src = "assets/kitchen_bg.png"; // cute kitchen background
+
+// Sound
+const catchSound = new Audio("assets/catch.mp3");
+catchSound.volume = 0.5;
+
+let score = 0;
+
+// Bucket
+const bucket = {
+  width: 120,
+  height: 80,
+  x: canvas.width/2 - 60,
+  y: canvas.height - 100,
+};
+
+// Strawberries
+const strawberries = [];
+let lastSpawn = 0;
+let spawnInterval = 1200;
+let speedIncrease = 0;
+
+// Input
+let pointerX = bucket.x + bucket.width/2;
+
+function movePointer(x){
+  pointerX = x;
+}
+
+// Mouse and touch
+window.addEventListener("mousemove", e => movePointer(e.clientX));
+window.addEventListener("touchmove", e => { e.preventDefault(); movePointer(e.touches[0].clientX); }, {passive:false});
+
+// Spawn strawberry
+function spawnStrawberry(){
+  const x = Math.random() * (canvas.width - 50) + 25; // 50px wide strawberries
+  const speed = 2 + Math.random()*3 + speedIncrease;
+  strawberries.push({x:x, y:-50, speed:speed, width:50, height:50});
+}
+
+// Game loop
+function gameLoop(timestamp){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  // Draw background
+  if(bgImg.complete) ctx.drawImage(bgImg,0,0,canvas.width,canvas.height);
+
+  // Move bucket
+  bucket.x = pointerX - bucket.width/2;
+  if(bucket.x < 0) bucket.x = 0;
+  if(bucket.x + bucket.width > canvas.width) bucket.x = canvas.width - bucket.width;
+
+  // Draw bucket
+  if(bucketImg.complete){
+    ctx.drawImage(bucketImg, bucket.x, bucket.y, bucket.width, bucket.height);
+  } else {
+    ctx.fillStyle="#ff2759";
+    ctx.fillRect(bucket.x, bucket.y, bucket.width, bucket.height);
+  }
+
+  // Spawn strawberries
+  if(!lastSpawn || timestamp - lastSpawn > spawnInterval){
+    spawnStrawberry();
+    lastSpawn = timestamp;
+  }
+
+  // Update and draw strawberries
+  for(let i=strawberries.length-1; i>=0; i--){
+    let s = strawberries[i];
+    s.y += s.speed;
+
+    // Draw strawberry
+    if(strawberryImg.complete){
+      ctx.drawImage(strawberryImg, s.x - s.width/2, s.y - s.height/2, s.width, s.height);
+    } else {
+      ctx.fillStyle="#ff0000";
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, 25,0,Math.PI*2);
+      ctx.fill();
+    }
+
+    // Collision with bucket
+    if(s.y + s.height/2 >= bucket.y && s.y - s.height/2 <= bucket.y + bucket.height &&
+       s.x + s.width/2 >= bucket.x && s.x - s.width/2 <= bucket.x + bucket.width){
+      strawberries.splice(i,1);
+      score++;
+      document.getElementById("score").textContent = "Score: " + score;
+
+      // Play sound
+      const soundClone = catchSound.cloneNode();
+      soundClone.play();
+    }
+
+    // Remove if off screen
+    if(s.y - s.height/2 > canvas.height){
+      strawberries.splice(i,1);
+    }
+  }
+
+  // Increase difficulty
+  if(score % 10 === 0 && score > 0){
+    spawnInterval = Math.max(500, 1200 - score*5);
+    speedIncrease = Math.min(5, score/10);
+  }
+
+  requestAnimationFrame(gameLoop);
+}
+
+gameLoop();
+</script>
+
+</body>
+</html>
